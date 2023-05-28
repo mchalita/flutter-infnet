@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:projeto_disciplina/providers/tarefa_provider.dart';
 import 'package:projeto_disciplina/routes/route_paths.dart';
 import 'package:projeto_disciplina/screens/tarefa_show_screen.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/tarefa_insert_screen.dart';
 import 'screens/tarefa_list_screen.dart';
 
 void main() {
-  runApp(App());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TarefaProvider(),
+      child: App(),
+    ),
+  );
 }
+
 
 class App extends StatelessWidget {
   @override

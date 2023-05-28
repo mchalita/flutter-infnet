@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:projeto_disciplina/models/tarefa.dart';
 import 'package:projeto_disciplina/providers/tarefa_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,7 @@ class TarefaListItem extends StatelessWidget {
       title: Text(tarefa.nome),
       subtitle: Text(tarefa.geolocalizacao),
       trailing: Text(tarefa.data),
+
       onTap: () {
         Navigator.of(context)
             .pushNamed(RoutePaths.TAREFA_SHOW_SCREEN, arguments: tarefa);

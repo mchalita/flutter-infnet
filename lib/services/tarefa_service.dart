@@ -18,21 +18,27 @@ class TarefaService {
     }
   }
 
-  Future<String> save(Tarefa tarefa) async {
+  Future<Response> save(Tarefa tarefa) async {
     try {
       String json = jsonEncode(tarefa.toJson());
 
-      Response response = await _tarefaRepository.save(json);
-
-      return jsonDecode(response.body) as String;
+      return await _tarefaRepository.save(json);
     } catch (err) {
       throw Exception("Problema ao salvar uma tarefa.");
     }
   }
 
-  Future<bool> delete(String id) async {
+  Future<Response> update(Tarefa tarefa, String? id) async {
     try {
-      Response response = await _tarefaRepository.delete(id);
+      return await _tarefaRepository.update(tarefa, id);
+    } catch (err) {
+      throw Exception("Problema ao atualizar uma tarefa.");
+    }
+  }
+
+  Future<bool> delete(Tarefa tarefa) async {
+    try {
+      Response response = await _tarefaRepository.delete(tarefa);
 
       return response.statusCode == 200;
     } catch (err) {

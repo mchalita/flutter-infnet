@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:location/location.dart';
-import 'package:provider/provider.dart';
 import 'package:projeto_disciplina/models/tarefa.dart';
 import 'package:projeto_disciplina/providers/tarefa_provider.dart';
+import 'package:provider/provider.dart';
 
 class TarefaInsertScreen extends StatefulWidget {
   const TarefaInsertScreen({super.key});
@@ -14,7 +15,7 @@ class TarefaInsertScreen extends StatefulWidget {
 
 class _TarefaInsertScreenState extends State<TarefaInsertScreen> {
   final _nome = TextEditingController();
-  final _data = TextEditingController();
+  DateTime _data = DateTime.now();
   final _geolocalizacao = TextEditingController();
 
   @override
@@ -27,7 +28,7 @@ class _TarefaInsertScreenState extends State<TarefaInsertScreen> {
 
   @override
   Widget build(BuildContext context) {
-    //final _tarefaProvider = Provider.of<TarefaProvider>(context);
+    final tarefaProvider = Provider.of<TarefaProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -43,11 +44,19 @@ class _TarefaInsertScreenState extends State<TarefaInsertScreen> {
                 labelText: "Nome",
               ),
             ),
-            TextField(
-              controller: _data,
-              keyboardType: TextInputType.datetime,
-              decoration: const InputDecoration(
-                labelText: "Data",
+            InkWell(
+              onTap: () => _selectDate(context),
+              child: InputDecorator(
+                decoration: const InputDecoration(
+                  labelText: "Data",
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(DateFormat('dd/MM/yyyy HH:mm').format(_data)),
+                    const Icon(Icons.arrow_drop_down),
+                  ],
+                ),
               ),
             ),
             TextField(
@@ -60,11 +69,13 @@ class _TarefaInsertScreenState extends State<TarefaInsertScreen> {
               onPressed: () async {
                 Tarefa tarefa = Tarefa(
                   _nome.text,
-                  _data.text,
+                  DateFormat('dd/MM/yyyy HH:mm').format(_data),
                   _geolocalizacao.text,
                 );
 
-                //await _tarefaProvider.save(tarefa);
+                await tarefaProvider.save(tarefa);
+
+                Navigator.pop(context);
               },
               child: const Text("Salvar"),
             ),
@@ -100,5 +111,31 @@ class _TarefaInsertScreenState extends State<TarefaInsertScreen> {
     locationData = await location.getLocation();
 
     return "${locationData.latitude} : ${locationData.longitude}";
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _data,
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(_data as DateTime),
+      );
+      if (pickedTime != null) {
+        setState(() {
+          _data = DateTime(
+            picked.year,
+            picked.month,
+            picked.day,
+            pickedTime.hour,
+            pickedTime.minute,
+          );
+        });
+      }
+    }
   }
 }
