@@ -10,9 +10,13 @@ class TarefaService {
     try {
       Response response = await _tarefaRepository.getAll();
 
-      Map<String, dynamic> json = jsonDecode(response.body);
+      if(response.body != "null"){
+        Map<String, dynamic> json = jsonDecode(response.body);
 
-      return Tarefa.listFromJson(json);
+        return Tarefa.listFromJson(json);
+      }
+
+      return [];
     } catch (err) {
       throw Exception("Problema ao buscar a lista.");
     }
